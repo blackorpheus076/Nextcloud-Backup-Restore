@@ -203,7 +203,7 @@ echo "$(date +"%H:%M:%S"): Creating backup of Nextcloud file directory..."
 
 #Pull from nextcloud server
 if [ "${sshMode}" = true ] ; then
-  rsync -PAax --del ${sshHost}:${nextcloudServerDir} ${nextcloudFileDir}
+  rsync -PAax --del --rsync-path="rsync --fake-super" ${sshHost}:${nextcloudServerDir} ${nextcloudFileDir}
 fi
 
 if [ "$useCompression" = true ] ; then
