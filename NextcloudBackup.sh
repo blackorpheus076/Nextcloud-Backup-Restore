@@ -1,14 +1,14 @@
 #!/bin/bash
 
 #
-# Bash script for creating backups from hosted Nextcloud instance to a local computer or NAS using SSH. This Script is based on the work of https://codeberg.org/DecaTec/Nextcloud-Backup-Restore
+# Bash script for creating backups from hosted Nextcloud instance to a local computer or NAS using SSH. This Script is based on the work of https://codeberg.org/DecaTec/Nextcloud-Backup-Restore and a fork of https://github.com/wagnbeu0/Nextcloud-Backup-Restore
 #
-# Version 3.4.0
+# Version 3.5.0
 #
 # Requirements:
-#	- ssh
+#	- ssh and rsync (for remote pull mode)
 #	- tar
-#	- pigz (https://zlib.net/pigz/) for using backup compression. If not available, you can use another compression algorithm (e.g. gzip)
+#	- xz, bzip2 or pigz compression
 #
 # Supported database systems:
 # 	- MySQL/MariaDB

@@ -3,6 +3,11 @@
 ## 3.5.0
 - Added ssh capabilities: the setup will ask you if you want to use SSH. This is useful if you want to backup a hosted nexctloud instance to your NAS f.ex. It will rsync your hosted nextcloud to the location of the backup to a pull directory and then archive it. Keeping a local mirror of the hosted instance will save data transferts for further backup. The original behavior from version 3.4 has been keeped but not tested.
 - The root user is not needed for ssh usage, so the root will be only asked with non-ssh mode.
+- uses bzip2 instead of pigz.
+- replaced "${databaseSystem,,}" by "${databaseSystem}" because it caused errors on qnap nas system.
+- Adaptation for the old backup retention to avoid deleting the pull directory with ssh.
+- stop/start webserver function desactivated with ssh.
+- Added options for different compression modes in the setup
 
 ## 3.4.0
 - During the setup, a hidden file .nextcloud-backup-restore is created on the backup destination. Before backup/restore is started, the presence of that file is checked to make sure the backup destination is mounted correctly. This is especially useful for backup destinations on external drives or network shares.

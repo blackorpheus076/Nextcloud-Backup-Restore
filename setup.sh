@@ -3,7 +3,7 @@
 #
 # Bash script for an easy setup of Nextcloud backup/restore scripts.
 #
-# Version 3.4.0
+# Version 3.5.0
 #
 # Usage:
 #   - If you intend to backup your Nextcloud to an external drive or network share, make sure it is mounted.
@@ -42,7 +42,8 @@ checkFileName='.nextcloud-backup-restore'
 sshMode=false
 sshHost='user@remotehost.com'
 compressionCommand='tar -cpjf'
-extractCommand='tar -xmpjf'
+compressionExt='bz2'
+extractCommand='tar -xmpJf'
 
 NextcloudBackupRestoreConf='NextcloudBackupRestore.conf'  # Holds the configuration for NextcloudBackup.sh and NextcloudRestore.sh
 
@@ -115,14 +116,41 @@ if [ "$sshMode" = false ] ; then
   read -p "Enter an new webserver service name or press ENTER if the webserver service name is ${webserverServiceName}: " WEBSERVERSERVICENAME
   [ -z "$WEBSERVERSERVICENAME" ] ||  webserverServiceName=$WEBSERVERSERVICENAME
   clear
-  read -p "Should the backed up data be compressed (bzip2 should be installed in the machine)? [Y/n]: " USECOMPRESSION
-
-  if [ "$USECOMPRESSION" == 'n' ] ; then
-  useCompression=false
-  fi
-  clear
 fi
+  
+read -p "Should the backed up data be compressed? [Y/n]: " USECOMPRESSION
 
+if [ "$USECOMPRESSION" == 'n' ] ; then
+  useCompression=false
+else
+PS3="Select the compression algorythm: "
+
+select lng in bzip2 pigz xz
+  do
+    case $lng in
+        "bzip2")
+           echo "$lng compression"
+           compressionCommand='tar -cpjf' 
+           compressionExt='bz2'
+           break;;
+        "pigz")
+            echo "$lng compression, make sure pigz is installed on your system"
+            compressionCommand='tar -I pigz -cpf'
+            compressionExt='gz'
+            break;;
+        "xz")
+           echo "$lng compression"
+	   compressionCommand='tar -cpJf'
+	   compressionExt='xz'
+           break;;
+        *)
+           echo "Please select a valid choice";;
+    esac
+  done
+fi
+echo ""
+echo "-------------------------------------"
+echo ""
 echo "Enter host/IP of the database server."
 echo "Usually: localhost"
 echo ""
@@ -228,7 +256,7 @@ fi
 
 if [ "$sshMode" = true ] ; then
   function occ_get() {
-	ssh "${sshHost}" php ${nextcloudServerDir}/occ config:system:get "$1"
+	  ssh -o ConnectTimeout=2 "${sshHost}" php ${nextcloudServerDir}/occ config:system:get "$1"
   }
 else
   function occ_get() {
@@ -310,9 +338,9 @@ fileNameBackupDataDir='nextcloud-datadir.tar'
 fileNameBackupDb='nextcloud-db.sql'
 
 if [ "$useCompression" = true ] ; then
-	fileNameBackupFileDir='nextcloud-filedir.tar.bz2'
-	fileNameBackupDataDir='nextcloud-datadir.tar.bz2'
-	fileNameBackupDb='nextcloud-db.sql.tar.bz2'
+	fileNameBackupFileDir="nextcloud-filedir.tar.$compressionExt"
+	fileNameBackupDataDir="nextcloud-datadir.tar.$compressionExt"
+	fileNameBackupDb="nextcloud-db.sql.tar.$compressionExt"
 fi
 
 fileNameBackupExternalDataDir=''
@@ -321,7 +349,7 @@ if [ ! -z "${nextcloudLocalExternalDataDir+x}" ] ; then
 	fileNameBackupExternalDataDir='nextcloud-external-datadir.tar'
 
 	if [ "$useCompression" = true ] ; then
-		fileNameBackupExternalDataDir='nextcloud-external-datadir.tar.bz2'
+		fileNameBackupExternalDataDir="nextcloud-external-datadir.tar.$compressionExt"
 	fi
 fi
 
