@@ -3,42 +3,47 @@
 # This will then create the configuration file `NextcloudBackupRestore.conf`.
 #
 # If you do not want to use the setup script, you can also take this file as starting point.
-# You will have to edit all section marked with '# TODO' in order to customize the configuration so it fits your Nextcloud instance.
-# Simply copy the sample file (`cp NextcloudBackupRestore.conf.sample NextcloudBackupRestore.conf`) and edit the file accordingly.
 
-# TODO: The main backup directory
+# The main backup directory
 backupMainDir='/backup'
 
-# TODO: Use compression for file/data dir
+# The file to check on the backup destination.
+# If the file does not exist, the backup/restore is cancelled.
+checkFileName='.nextcloud-backup-restore'
+
+# SSH: backup from a distant server via SSH
+# It is advised to first setup a key pair with the user of the script to be more straitforward
+sshMode=true
+sshHost=ssh.nextcloudhost.com
+nextcloudServerDir=sites/nextcloud.filedir
+
+# Use compression for file/data dir
 # When this is the only script for backups, it is recommend to enable compression.
 # If the output of this script is used in another (compressing) backup (e.g. borg backup),
 # you should probably disable compression here and only enable compression of your main backup script.
-useCompression=false
+useCompression=true
 
-# TOOD: The bare tar command for using compression while backup.
+# TODO: The bare tar command for using compression while backup. Using bzip2
 # Use 'tar -cpzf' if you want to use gzip compression.
-compressionCommand='tar -I pigz -cpf'
+compressionCommand='tar -cpjf'
 
-# TOOD: The bare tar command for using compression while restoring.
+# TODO: The bare tar command for using compression while restoring.
 # Use 'tar -xmpzf' if you want to use gzip compression.
-extractCommand='tar -I pigz -xmpf'
+extractCommand='tar -xmpjf'
 
 # TODO: File names for backup files
-fileNameBackupFileDir='nextcloud-filedir.tar.gz'
-fileNameBackupDataDir='nextcloud-datadir.tar.gz'
+fileNameBackupFileDir='nextcloud-filedir.tar.bz2'
+fileNameBackupDataDir='nextcloud-datadir.tar.bz2'
 fileNameBackupExternalDataDir=''
-fileNameBackupDb='nextcloud-db.sql'
-folderNameBackupFileDir='nextcloud-filedir'
-folderNameBackupDataDir='nextcloud-datadir'
-
+fileNameBackupDb='nextcloud-db.sql.tar.bz2'
 
 # TODO: The directory of your Nextcloud installation (this is a directory under your web root)
-nextcloudFileDir='/var/www/html/nextcloud'
+nextcloudFileDir='/var/www/nextcloud'
 
-# TODO: The directory of your Nextcloud data directory (outside the Nextcloud file directory)
+# The directory of your Nextcloud data directory (outside the Nextcloud file directory)
 # If your data directory is located under Nextcloud's file directory (somewhere in the web root),
-# the data directory should not be a separate part of the backup
-nextcloudDataDir='/var/nextcloud_data'
+# the data directory will not be a separate part of the backup but included in the file directory backup.
+nextcloudDataDir='/home/clients/9bfb091fae10aad2e23d1b8c63ce8c5d/sites/nextcloud.rivierarehab.ch/data'
 
 # TODO: The directory of your Nextcloud's local external storage.
 # Uncomment if you use local external storage.
@@ -50,21 +55,27 @@ webserverServiceName='nginx'
 # TODO: Your web server user
 webserverUser='www-data'
 
-# TODO: The name of the database system (one of: mysql, mariadb, postgresql)
+# The name of the database system (one of: mysql, mariadb, postgresql)
 # 'mysql' and 'mariadb' are equivalent, so when using 'mariadb', you could also set this variable to 'mysql' and vice versa.
-databaseSystem='postgresql'
+databaseSystem='mariadb'
 
-# TODO: Your Nextcloud database name
-nextcloudDatabase='nextcloud_db'
+# Your Nextcloud database name
+nextcloudDatabase='localhost'
 
-# TODO: Your Nextcloud database user
-dbUser='nextcloud_db_user'
+# Your Nextcloud database host/IP
+nextcloudDatabaseHost=''
 
-# TODO: The password of the Nextcloud database user
-dbPassword='pAsSw0rD'
+# Your Nextcloud database port
+nextcloudDatabasePort='3306'
 
-# TODO: The maximum number of backups to keep (when set to 0, all backups are kept)
-maxNrOfBackups=0
+# Your Nextcloud database user
+dbUser=''
+
+# The password of the Nextcloud database user
+dbPassword=''
+
+# The maximum number of backups to keep (when set to 0, all backups are kept)
+maxNrOfBackups=1
 
 # TODO: Setting to include/exclude the backup directory of the Nextcloud updater
 # Set to true in order to include the backups of the Nextcloud updater
