@@ -256,7 +256,7 @@ fi
 
 if [ "$sshMode" = true ] ; then
   function occ_get() {
-	  ssh -o ConnectTimeout=2 "${sshHost}" php ${nextcloudServerDir}/occ config:system:get "$1"
+	  ssh -o ConnectTimeout=10 "${sshHost}" php ${nextcloudServerDir}/occ config:system:get "$1"
   }
 else
   function occ_get() {
@@ -337,20 +337,20 @@ fileNameBackupFileDir='nextcloud-filedir.tar'
 fileNameBackupDataDir='nextcloud-datadir.tar'
 fileNameBackupDb='nextcloud-db.sql'
 
-if [ "$useCompression" = true ] ; then
-	fileNameBackupFileDir="nextcloud-filedir.tar.$compressionExt"
-	fileNameBackupDataDir="nextcloud-datadir.tar.$compressionExt"
-	fileNameBackupDb="nextcloud-db.sql.tar.$compressionExt"
-fi
+#if [ "$useCompression" = true ] ; then
+#	fileNameBackupFileDir="nextcloud-filedir.tar.$compressionExt"
+#	fileNameBackupDataDir="nextcloud-datadir.tar.$compressionExt"
+#	fileNameBackupDb="nextcloud-db.sql.tar.$compressionExt"
+#fi
 
 fileNameBackupExternalDataDir=''
 
 if [ ! -z "${nextcloudLocalExternalDataDir+x}" ] ; then
 	fileNameBackupExternalDataDir='nextcloud-external-datadir.tar'
 
-	if [ "$useCompression" = true ] ; then
-		fileNameBackupExternalDataDir="nextcloud-external-datadir.tar.$compressionExt"
-	fi
+#	if [ "$useCompression" = true ] ; then
+#		fileNameBackupExternalDataDir="nextcloud-external-datadir.tar.$compressionExt"
+#	fi
 fi
 
 mkdir -p "$backupMainDir"
@@ -377,7 +377,7 @@ touch "${backupMainDir}/${checkFileName}"
   echo "# you should probably disable compression here and only enable compression of your main backup script."
   echo "useCompression=$useCompression"
   echo ""
-  echo "# TODO: The bare tar command for using compression while backup. Using bzip2"
+  echo "# TODO: The bare tar command for using compression while backup"
   echo "# Use 'tar -cpzf' if you want to use gzip compression."
   echo "compressionCommand='$compressionCommand'"
   echo ""
@@ -389,6 +389,7 @@ touch "${backupMainDir}/${checkFileName}"
   echo "fileNameBackupFileDir='$fileNameBackupFileDir'"
   echo "fileNameBackupDataDir='$fileNameBackupDataDir'"
   echo "fileNameBackupExternalDataDir='$fileNameBackupExternalDataDir'"
+  echo "Filename compression extension='$compressionExt'"
   echo "fileNameBackupDb='$fileNameBackupDb'"
   echo ""
   echo "# TODO: The directory of your Nextcloud installation (this is a directory under your web root)"
